@@ -1,0 +1,4 @@
+name: OnDemandGCE
+main: com.entertvl.Main
+version: 1.0-SNAPSHOT
+author: entertvl
