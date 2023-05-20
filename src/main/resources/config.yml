@@ -1,6 +1,5 @@
 servers:
   example:
-    project_id: 'example-project-id'
-    zone: 'asia-northeast1-b'
-    instance: 'example-server'
-    service_account_email: 'sa-name@example-project-id.iam.gserviceaccount.com'
+    project_id: "example-project-id"
+    zone: "asia-northeast1-b"
+    instance: "example-server"
