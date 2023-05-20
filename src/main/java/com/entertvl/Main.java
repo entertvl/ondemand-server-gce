@@ -5,7 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -15,24 +18,41 @@ public class Main extends Plugin {
 
     public static Plugin plugin;
     public static Configuration config;
+    public static GCEServerController controller;
     private static String configName = "config.yml";
 
     @Override
     public void onEnable() {
-        Main.plugin = this;
 
         if (!getDataFolder().exists()) {
             getDataFolder().mkdir();
         }
 
+        Main.plugin = this;
         Main.config = loadConf(configName);
 
         getProxy().getPluginManager().registerListener(this, new Events());
 
+        Configuration servers = Main.config.getSection("servers");
+        Map<String, GCEServer> gceServers = new HashMap<String, GCEServer>();
+
+        for (Map.Entry<String, ServerInfo> entry : Main.plugin.getProxy().getServers().entrySet()) {
+            String name = entry.getKey();
+
+            if (servers.contains(name)) {
+                System.out.print("New server entry: " + name);
+                Configuration server = servers.getSection(name);
+                gceServers.put(name, new GCEServer(server));
+
+            }
+
+        }
+
+        Main.controller = new GCEServerController(gceServers);
+
     }
 
     public static Configuration loadConf(String fileName) {
-
         File conf = new File(Main.plugin.getDataFolder(), Main.configName);
 
         if (!conf.exists()) {
@@ -44,8 +64,6 @@ public class Main extends Plugin {
                 e.printStackTrace();
             }
         }
-
-        System.out.println(conf.toPath());
 
         try {
             return ConfigurationProvider.getProvider(YamlConfiguration.class)
