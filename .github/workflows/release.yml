@@ -19,17 +19,16 @@ jobs:
           java-version-file: .java-version
           distribution: oracle
           cache: maven
-      - name: version
-        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
-        id: version
+      - name: package
+        run: |
+          echo "artifactId=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_OUTPUT
+          echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+        id: package
       - name: package jar
         run: mvn clean package
       - name: upload artifact
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./target/ondemand-server-gce-${{ steps.version.outputs.version }}-jar-with-dependencies.jar
-          asset_name: ondemand-server-gce-${{ steps.version.outputs.version }}.jar
-          asset_content_type: application/java-archiver
+        run: |
+          cp ./target/${{ steps.package.outputs.artifactId }}-${{ steps.package.outputs.version }}-jar-with-dependencies.jar ${{ steps.package.outputs.artifactId }}-${{ steps.package.outputs.version }}.jar
+          gh release upload ${{ github.event.release.tag_name }} ${{ steps.package.outputs.artifactId }}-${{ steps.package.outputs.version }}
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
