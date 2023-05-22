@@ -21,10 +21,10 @@ public class Events implements Listener {
     TextComponent message = new TextComponent();
     String text = String.format("Server is %s.", state.toString().toLowerCase());
 
-    System.out.print("Target Server: " + e.getTarget().getName() + " (" + e.getTarget().getSocketAddress() + ")");
+    System.out.print("Target Server: " + name + " (" + e.getTarget().getSocketAddress() + ")");
 
     if (state == RunningState.SUSPENDED || state == RunningState.TERMINATED) {
-      Main.controller.startServerByName(e.getTarget().getName());
+      Main.controller.startServerByName(name);
       message.setText(String.format("%s Please wait and reconnect.", text));
       player.disconnect(message);
       e.setCancelled(true);
