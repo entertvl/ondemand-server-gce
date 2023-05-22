@@ -27,8 +27,10 @@ jobs:
       - name: package jar
         run: mvn clean package
       - name: upload artifact
-        run: |
-          cp ./target/${{ steps.package.outputs.artifactId }}-${{ steps.package.outputs.version }}-jar-with-dependencies.jar ${{ steps.package.outputs.artifactId }}-${{ steps.package.outputs.version }}.jar
-          gh release upload ${{ github.event.release.tag_name }} ${{ steps.package.outputs.artifactId }}-${{ steps.package.outputs.version }}
         env:
+          TARGET_PACKAGE: ./target/${{ steps.package.outputs.artifactId }}-${{ steps.package.outputs.version }}-jar-with-dependencies.jar
+          PACKAGE_NAME: ${{ steps.package.outputs.artifactId }}-${{ steps.package.outputs.version }}.jar
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp $TARGET_PACKAGE $PACKAGE_NAME
+          gh release upload ${{ github.event.release.tag_name }} $PACKAGE_NAME
