@@ -30,5 +30,6 @@ jobs:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./target/ondemand-server-gce-${{ steps.version.outputs.version }}-jar-with-dependencies.jar
           asset_name: ondemand-server-gce-${{ steps.version.outputs.version }}.jar
+          asset_content_type: application/java-archiver
         env:
           GITHUB_TOKEN: ${{ github.token }}
