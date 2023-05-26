@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  mc_test:
+    image: itzg/minecraft-server
+    environment:
+      SERVER_NAME: "test"
+      TYPE: "PAPER"
+      EULA: "TRUE"
+      ONLINE_MODE: "FALSE"
+    volumes:
+      - ./minecraft:/data
+    networks:
+      - minecraft
+  mc_bungeecord:
+    image: itzg/bungeecord
+    environment:
+      TYPE: "BUNGEECORD"
+      BUNGEE_JAR_REVISION: "1"
+    ports:
+      - "25565:25565/tcp"
+    volumes:
+      - ./bungeecord:/server
+      - ../target:/target
+    command: 
+      - /bin/bash
+      - '-c'
+      - |
+        /bin/sh << HERE
+        find /target -type f -regex '^/target/ondemand-server-gce-.+-jar-with-dependencies.jar$' -exec cp -fv {} /server/plugins \;
+        /usr/bin/run-bungeecord.sh;
+        HERE
+    networks:
+      - minecraft
+
+networks:
+  minecraft:
